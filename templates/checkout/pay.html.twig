@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <h1>Payment details</h1>
+    <div style="max-width: 350px">
+        <div class="form-group">
+            <label for="cardholder-name" class="sr-only">Cardholder Name</label>
+            <input id="cardholder-name" type="text" class="form-control" placeholder="Cardholder Name" required>
+        </div>
+
+        <div id="card-element" class="form-group"></div>
+
+        <button id="card-button" data-secret="{{ client_secret }}" class="btn btn-default" data-loading-text="Submitting Payment...">
+            Submit Payment
+        </button>
+    </div>
+
+    <p id="status"></p>
+
+    <script>
+        $(document).ready(function () {
+            const stripe = Stripe('{{ stripe_publishable_key }}');
+
+            const elements = stripe.elements();
+            const cardElement = elements.create('card');
+            cardElement.mount('#card-element');
+
+            const cardholderName = document.getElementById('cardholder-name');
+            const cardButton = document.getElementById('card-button');
+            const clientSecret = cardButton.dataset.secret;
+
+            cardButton.addEventListener('click', function(ev) {
+                const $btn = $(cardButton).button('loading');
+
+                stripe.handleCardPayment(
+                    clientSecret, cardElement, {
+                        payment_method_data: {
+                            billing_details: {name: cardholderName.value}
+                        }
+                    }
+                ).then(function(result) {
+                    $btn.button('reset');
+                    if (result.error) {
+                        $('#status').text(result.error.message);
+                    } else {
+                        $('#status').text('Payment completed!');
+                        setTimeout(function () {
+                            window.location = '{{ path('app_checkout_thankyou') }}';
+                        }, 1000);
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
