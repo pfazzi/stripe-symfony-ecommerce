@@ -11,6 +11,7 @@ class CheckoutController
 {
     /**
      * @Route(path="/cart/step-one", methods={"GET"})
+     *
      * @param Request $request
      */
     public function stepOneAction(Request $request): void
