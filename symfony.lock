@@ -124,6 +124,9 @@
     "symfony/service-contracts": {
         "version": "v1.1.5"
     },
+    "symfony/templating": {
+        "version": "v4.3.3"
+    },
     "symfony/var-exporter": {
         "version": "v4.3.3"
     },
